@@ -17,8 +17,12 @@ jobs:
           install: >-
             mingw-w64-x86_64-gcc
             mingw-w64-x86_64-go
+            mingw-w64-x86_64-python
             git
       - name: Install Go
         uses: actions/setup-go@v5
       - name: Clone frida
-        run: go version
+        run: |
+          git clone https://github.com/frida/frida.git && cd frida
+          python tools/ensure-submodules.py frida-core
+          
