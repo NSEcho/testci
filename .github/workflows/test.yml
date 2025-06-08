@@ -19,6 +19,7 @@ jobs:
             mingw-w64-x86_64-go
             mingw-w64-x86_64-python
             git
+            make
       - name: Install Go
         uses: actions/setup-go@v5
       - name: Clone frida
@@ -28,6 +29,17 @@ jobs:
         run: |
           git clone https://github.com/frida/frida.git && cd frida
           python tools/ensure-submodules.py frida-core
-          make
+          ./configure
+          --host=windows-x86_64-w64-mingw32 
+          --without-prebuilds=sdk:host
+          --enable-gadget
+          --enable-server
+          --enable-portal
+          --enable-inject
+          --
+          "-Dfrida_qml=auto"
+          "-Dfrida-gum:devkits=gum,gumjs"
+          "-Dfrida-core:compiler_backend=enabled"
+          "-Dfrida-core:devkits=core"
           
           
