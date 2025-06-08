@@ -18,6 +18,7 @@ jobs:
             mingw-w64-x86_64-gcc
             mingw-w64-x86_64-go
             mingw-w64-x86_64-python
+            mingw-w64-x86_64-ca-certificates
             git
             make
       - name: Install Go
