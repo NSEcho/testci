@@ -22,7 +22,12 @@ jobs:
       - name: Install Go
         uses: actions/setup-go@v5
       - name: Clone frida
+        env:
+          CC: gcc
+          CXX: g++
         run: |
           git clone https://github.com/frida/frida.git && cd frida
           python tools/ensure-submodules.py frida-core
+          make
+          
           
