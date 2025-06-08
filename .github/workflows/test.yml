@@ -5,6 +5,9 @@ on: push
 jobs:
   build:
     runs-on: windows-latest
+    defaults:
+      run:
+        shell: msys2 {0}
     steps:
       - name: Install MinGW toolchain
         uses: msys2/setup-msys2@v2
@@ -14,5 +17,5 @@ jobs:
       - name: Install Go
         uses: actions/setup-go@v5
       - name: Clone frida
-        shell: msys2 {0}
+        run: go version
         run: git clone https://github.com/frida/frida.git
