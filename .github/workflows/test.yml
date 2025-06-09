@@ -21,26 +21,8 @@ jobs:
             mingw-w64-x86_64-ca-certificates
             git
             make
-      - name: Install Go
-        uses: actions/setup-go@v5
-      - name: Clone frida
-        env:
-          CC: gcc
-          CXX: g++
-        run: |
-          git clone https://github.com/frida/frida.git && cd frida
-          python tools/ensure-submodules.py frida-core
-          ./configure
-          --host=windows-x86_64-w64-mingw32 
-          --without-prebuilds=sdk:host
-          --enable-gadget
-          --enable-server
-          --enable-portal
-          --enable-inject
-          --
-          "-Dfrida_qml=auto"
-          "-Dfrida-gum:devkits=gum,gumjs"
-          "-Dfrida-core:compiler_backend=enabled"
-          "-Dfrida-core:devkits=core"
+            wget
+      - name: Download devkit
+        run: wget https://github.com/NSEcho/build-frida-core-windows-ci/actions/runs/15534758898/artifacts/3287843518 && ls -l
           
           
