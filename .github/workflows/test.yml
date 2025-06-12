@@ -29,6 +29,8 @@ jobs:
           cache: true
           setup-python: false
       - name: Download frida
+        env:
+          MSYS2_LOCATION: ${{ steps.msys2.outputs.msys2-location }}
         run: |
           git clone https://github.com/frida/frida.git && cd frida/
           python3 tools/ensure-submodules.py frida-core
@@ -37,7 +39,7 @@ jobs:
           git fetch origin test_branch:test_branch
           git checkout test_branch
           echo "here I am"
-          ./configure --host=windows-x86_64 --with-devkits=core --enable-compiler-backend --disable-tests && make
+          .\configure --host=windows-x86_64 --with-devkits=core --enable-compiler-backend --disable-tests && .\make
 
 
           
