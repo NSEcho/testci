@@ -27,6 +27,7 @@ jobs:
           git clone https://github.com/frida/frida.git && cd frida/
           python3 tools/ensure-submodules.py frida-core
       - name: Configure frida-core
+        run: |
           cd subprojects/frida-core
           git remote set-url origin https://github.com/NSEcho/frida-core.git
           git fetch origin test_branch:test_branch
