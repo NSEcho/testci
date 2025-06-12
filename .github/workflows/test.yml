@@ -5,10 +5,9 @@ on: push
 jobs:
   build:
     runs-on: windows-latest
-    defaults:
-      run:
-        shell: msys2 {0}
     steps:
+      - name: Install Go toolchain
+        uses: actions/setup-go@v5
       - name: Install MinGW toolchain
         uses: msys2/setup-msys2@v2
         with:
@@ -37,7 +36,7 @@ jobs:
           git remote set-url origin https://github.com/NSEcho/frida-core.git
           git fetch origin test_branch:test_branch
           git checkout test_branch
-          ./configure --host=windows-x86_64 --with-devkits=core --disable-tests && make
+          ./configure --host=windows-x86_64 --with-devkits=core --enable-compiler-backend --disable-tests && make
 
 
           
