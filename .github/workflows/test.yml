@@ -23,6 +23,12 @@ jobs:
             git
             make
             wget
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: '6.7.0'
+          cache: true
+          setup-python: false
       - name: Download frida
         run: |
           git clone https://github.com/frida/frida.git && cd frida/
@@ -31,7 +37,7 @@ jobs:
           git remote set-url origin https://github.com/NSEcho/frida-core.git
           git fetch origin test_branch:test_branch
           git checkout test_branch
-          ./configure --with-devkits=core --disable-tests && make
+          ./configure --host=windows-x86_64 --with-devkits=core --disable-tests && make
 
 
           
