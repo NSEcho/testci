@@ -38,7 +38,7 @@ jobs:
           git remote set-url origin https://github.com/NSEcho/frida-core.git
           git fetch origin test_branch:test_branch
           git checkout test_branch
-          echo "here I am"
+          echo "test"
           .\configure --host=windows-x86_64 --with-devkits=core --enable-compiler-backend --disable-tests && .\make
 
 
