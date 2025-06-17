@@ -60,9 +60,6 @@ jobs:
           submodules: recursive
       - name: Install Go toolchain
         uses: actions/setup-go@v5
-        with:
-          go-version-file: 'src/compiler/go.mod'
-          cache-dependency-path: 'src/compiler/go.mod'
       - name: Build
         run: |
           ./configure \
