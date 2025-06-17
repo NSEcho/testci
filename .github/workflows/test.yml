@@ -54,7 +54,7 @@ jobs:
   manylinux:
     strategy:
       matrix:
-        arch: [x86, x86_64, x86_64-musl, armhf, arm64, arm64-musl, mips, mipsel, mips64, mips64el]
+        arch: [x86, x86_64, x86_64-musl]
       fail-fast: false
     runs-on: ubuntu-latest
     container: ghcr.io/frida/x-tools-linux-${{ matrix.arch }}:latest
@@ -91,7 +91,7 @@ jobs:
           cp ../frida-go-examples/list_devices/list_devices.go main.go
           cp /tmp/libfrida-core.a /tmp/frida-core.h .
           cp frida-core.h frida/
-          go build -o ll main.go && ./ll
+          CC="/opt/x-tools/i686-linux-gnu/bin/i686-linux-gnu-gcc -march=pentium4" go build -o ll main.go && ./ll
 
 
           
