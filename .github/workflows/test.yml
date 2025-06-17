@@ -82,6 +82,10 @@ jobs:
               ${{ !startsWith(matrix.arch, 'mips') && '--enable-compiler-backend' || '' }} \
               ${{ env.FRIDA_CORE_OPTIONS }}
           make
+          echo "gcc"
+          echo | gcc -E -Wp,-v -
+          echo "ld"
+          ld --verbose | grep SEARCH_DIR | tr -s ' ;' \\012
 
 
           
