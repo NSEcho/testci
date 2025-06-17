@@ -15,6 +15,9 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: recursive
+      - name: Copy files
+        run: |
+          cp go.mod build-backend.py main.go /tmp
       - name: Install MinGW toolchain
         uses: msys2/setup-msys2@v2
         with:
@@ -42,9 +45,9 @@ jobs:
           git clone https://github.com/frida/frida.git && cd frida/
           python3 tools/ensure-submodules.py frida-core
           cd subprojects/frida-core
-          cp build-backend.py src/compiler/
+          cp /tmp/build-backend.py src/compiler/
           mkdir src/compiler/symbol-replacer
-          cp go.mod main.go src/compiler/symbol-replacer
+          cp /tmp/go.mod /tmp/main.go src/compiler/symbol-replacer
           .\configure --host=windows-x86_64 --with-devkits=core --enable-compiler-backend --disable-tests && .\make
   manylinux:
     strategy:
@@ -58,6 +61,9 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: recursive
+      - name: Copy files
+        run: |
+          cp go.mod build-backend.py main.go /tmp
       - name: Install Go toolchain
         uses: actions/setup-go@v5
         with:
@@ -68,6 +74,9 @@ jobs:
           pwd && ls -l
           python3 tools/ensure-submodules.py frida-core
           cd subprojects/frida-core
+          mkdir src/compiler/symbol-replacer
+          cp /tmp/build-backend.py src/compiler/
+          cp /tmp/main.go /tmp/go.mod src/compiler/symbol-replacer/
           ./configure \
               --host=$XTOOLS_HOST \
               ${{ !startsWith(matrix.arch, 'mips') && '--enable-compiler-backend' || '' }} \
