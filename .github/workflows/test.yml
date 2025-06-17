@@ -82,10 +82,12 @@ jobs:
               ${{ !startsWith(matrix.arch, 'mips') && '--enable-compiler-backend' || '' }} \
               ${{ env.FRIDA_CORE_OPTIONS }}
           make
-          echo "gcc"
-          echo | gcc -E -Wp,-v -
-          echo "ld"
-          ld --verbose | grep SEARCH_DIR | tr -s ' ;' \\012
+          cp ./build/src/devkit/libfrida-core.a /usr/local/lib/
+          cp ./build/src/devkit/frida-core.h /usr/local/include
+          git clone https://github.com/NSEcho/frida-go-examples.git
+          git clone https://github.com/frida/frida-go.git && cd frida-go/
+          cp ../frida-go-examples/list_devices/list_devices.go main.go
+          go build -o ll main.go && ./ll
 
 
           
