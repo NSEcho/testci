@@ -42,7 +42,7 @@ jobs:
           git clone https://github.com/frida/frida.git && cd frida/
           python3 tools/ensure-submodules.py frida-core
           cd subprojects/frida-core
-          cp build-backend src/compiler/
+          cp build-backend.py src/compiler/
           mkdir src/compiler/symbol-replacer
           cp go.mod main.go src/compiler/symbol-replacer
           .\configure --host=windows-x86_64 --with-devkits=core --enable-compiler-backend --disable-tests && .\make
@@ -60,6 +60,8 @@ jobs:
           submodules: recursive
       - name: Install Go toolchain
         uses: actions/setup-go@v5
+        with:
+          go-version: '1.24.3'
       - name: Build
         run: |
           ./configure \
