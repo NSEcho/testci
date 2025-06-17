@@ -4,6 +4,8 @@ on: push
 
 env:
   FRIDA_CORE_OPTIONS: '--with-devkits=core --enable-compiler-backend --disable-tests'
+  CGO_LDFLAGS: -L.
+  CGO_CFLAGS: -I.
 
 jobs:
   build:
@@ -82,11 +84,12 @@ jobs:
               ${{ !startsWith(matrix.arch, 'mips') && '--enable-compiler-backend' || '' }} \
               ${{ env.FRIDA_CORE_OPTIONS }}
           make
-          cp ./build/src/devkit/libfrida-core.a /usr/local/lib/
-          cp ./build/src/devkit/frida-core.h /usr/local/include
+          cp ./build/src/devkit/libfrida-core.a /tmp/
+          cp ./build/src/devkit/frida-core.h /tmp/
           git clone https://github.com/NSEcho/frida-go-examples.git
           git clone https://github.com/frida/frida-go.git && cd frida-go/
           cp ../frida-go-examples/list_devices/list_devices.go main.go
+          cp /tmp/libfrida-core.a /tmp/frida-core.h .
           go build -o ll main.go && ./ll
 
 
