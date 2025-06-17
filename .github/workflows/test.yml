@@ -2,12 +2,19 @@ name: CI
 
 on: push
 
+env:
+  FRIDA_CORE_OPTIONS: '--with-devkits=core --enable-compiler-backend --disable-tests'
+
 jobs:
   build:
     runs-on: windows-latest
     steps:
       - name: Install Go toolchain
         uses: actions/setup-go@v5
+      - name: Check out repo
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
       - name: Install MinGW toolchain
         uses: msys2/setup-msys2@v2
         with:
@@ -35,11 +42,34 @@ jobs:
           git clone https://github.com/frida/frida.git && cd frida/
           python3 tools/ensure-submodules.py frida-core
           cd subprojects/frida-core
-          git remote set-url origin https://github.com/NSEcho/frida-core.git
-          git fetch origin test_branch:test_branch
-          git checkout test_branch
-          echo "testa"
+          cp build-backend src/compiler/
+          mkdir src/compiler/symbol-replacer
+          cp go.mod main.go src/compiler/symbol-replacer
           .\configure --host=windows-x86_64 --with-devkits=core --enable-compiler-backend --disable-tests && .\make
+  manylinux:
+    strategy:
+      matrix:
+        arch: [x86, x86_64, x86_64-musl, armhf, arm64, arm64-musl, mips, mipsel, mips64, mips64el]
+      fail-fast: false
+    runs-on: ubuntu-latest
+    container: ghcr.io/frida/x-tools-linux-${{ matrix.arch }}:latest
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - name: Install Go toolchain
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: 'src/compiler/go.mod'
+          cache-dependency-path: 'src/compiler/go.mod'
+      - name: Build
+        run: |
+          ./configure \
+              --host=$XTOOLS_HOST \
+              ${{ !startsWith(matrix.arch, 'mips') && '--enable-compiler-backend' || '' }} \
+              ${{ env.FRIDA_CORE_OPTIONS }}
+          make
 
 
           
