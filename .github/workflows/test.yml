@@ -67,7 +67,7 @@ jobs:
           git clone https://github.com/frida/frida.git && cd frida
           pwd && ls -l
           python3 tools/ensure-submodules.py frida-core
-          cd frida-core
+          cd subprojects/frida-core
           ./configure \
               --host=$XTOOLS_HOST \
               ${{ !startsWith(matrix.arch, 'mips') && '--enable-compiler-backend' || '' }} \
