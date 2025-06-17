@@ -91,7 +91,7 @@ jobs:
           cp ../frida-go-examples/list_devices/list_devices.go main.go
           cp /tmp/libfrida-core.a /tmp/frida-core.h .
           cp frida-core.h frida/
-          go build -o ll main.go && ./ll
+          CC=/opt/x-tools/aarch64-linux-gnu/bin/aarch64-linux-gnu-gcc go build -o ll main.go && ./ll
 
 
           
