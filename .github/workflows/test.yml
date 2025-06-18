@@ -96,7 +96,7 @@ jobs:
           cp /tmp/libfrida-core.a /tmp/frida-core.h .
           file libfrida-core.a
           cp frida-core.h frida/
-          CC="/opt/x-tools/i686-linux-gnu/bin/i686-linux-gnu-gcc" GOOS=linux GOARCH=386 go build -x -o ll main.go && ./ll
+          CC="/opt/x-tools/i686-linux-gnu/bin/i686-linux-gnu-gcc" GOOS=linux GOARCH=386 CGO_LDFLAGS="-L." CGO_CFLAGS="-I." go build -x -o ll main.go && ./ll
 
 
           
