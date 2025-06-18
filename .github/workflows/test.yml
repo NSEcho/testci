@@ -94,7 +94,7 @@ jobs:
           cp ../frida-go-examples/list_devices/list_devices.go main.go
           cp /tmp/libfrida-core.a /tmp/frida-core.h .
           cp frida-core.h frida/
-          CC="/opt/x-tools/i686-linux-gnu/bin/i686-linux-gnu-gcc" go build -o ll main.go && ./ll
+          CC="/opt/x-tools/i686-linux-gnu/bin/i686-linux-gnu-gcc" GOOS=linux GOARCH=i386 go build -o ll main.go && ./ll
 
 
           
