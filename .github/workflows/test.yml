@@ -75,6 +75,7 @@ jobs:
           go-version: '1.24.3'
       - name: Build
         run: |
+          /opt/x-tools/i686-linux-gnu/bin/i686-linux-gnu-gcc --verbose | grep SEARCH_DIR | tr -s ' ;' \\012
           go tool dist list | grep -i linux
           git clone https://github.com/frida/frida.git && cd frida
           pwd && ls -l
