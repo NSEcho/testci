@@ -102,7 +102,8 @@ def build_backend(
     )
 
     pr = run(priv_dir / symbol_replacer.name, backend_a.name, *config["nm"], *config["ranlib"])
-    print(pr.stdout)
+    print("outerino", pr.stdout)
+    print("errerino", pr.stderr)
 
     if (mingw := config.get("mingw")) is not None and (abi := config["abi"]) in {
         "x86",
