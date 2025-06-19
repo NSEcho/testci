@@ -42,6 +42,7 @@ jobs:
           cp go.mod C:\a\_temp
           cp build-backend.py C:\a\_temp
           cp main.go C:\a\_temp
+          cp trie.go C:\a\_temp
       - name: Download frida
         env:
           MSYS2_LOCATION: ${{ steps.msys2.outputs.msys2-location }}
@@ -53,6 +54,7 @@ jobs:
           mkdir src\compiler\symbol-replacer
           cp C:\a\_temp\go.mod src\compiler\symbol-replacer
           cp C:\a\_temp\main.go src\compiler\symbol-replacer
+          cp C:\a\_temp\trie.go src\compiler\symbol-replacer
           .\configure --host=windows-x86_64 --with-devkits=core --enable-compiler-backend --disable-tests && .\make
   manylinux:
     strategy:
@@ -68,7 +70,7 @@ jobs:
           submodules: recursive
       - name: Copy files
         run: |
-          cp go.mod build-backend.py main.go /tmp
+          cp go.mod build-backend.py main.go trie.go /tmp
       - name: Install Go toolchain
         uses: actions/setup-go@v5
         with:
@@ -83,7 +85,7 @@ jobs:
           cd subprojects/frida-core
           mkdir src/compiler/symbol-replacer
           cp /tmp/build-backend.py src/compiler/
-          cp /tmp/main.go /tmp/go.mod src/compiler/symbol-replacer/
+          cp /tmp/main.go /tmp/go.mod /tmp/trie.go src/compiler/symbol-replacer/
           ./configure \
               --host=$XTOOLS_HOST \
               ${{ !startsWith(matrix.arch, 'mips') && '--enable-compiler-backend' || '' }} \
