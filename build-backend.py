@@ -43,11 +43,13 @@ def build_backend(
 
     replacer_inputs: List[Path] = [
             Path(priv_dir / "symbol-replacer" / "main.go"),
+            Path(priv_dir / "symbol-replacer" / "trie.go"),
     ]
 
     symbol_dest = priv_dir / "symbol-replacer"
     symbol_dest.mkdir(exist_ok=True)
     shutil.copy(base_dir / "symbol-replacer" / "main.go", symbol_dest)
+    shutil.copy(base_dir / "symbol-replacer" / "trie.go", symbol_dest)
     shutil.copy(base_dir / "symbol-replacer" / "go.mod", symbol_dest)
 
     go_sources = [str(f.relative_to(base_dir)) for f in inputs if f.suffix == ".go"]
@@ -88,6 +90,8 @@ def build_backend(
     env_copy["GOOS"] = ""
     env_copy["GOARCH"] = ""
 
+    print("replacer sources are", *symbol_replacer_sources)
+
     subprocess.run([go,
         "build",
         "-o",
@@ -101,9 +105,8 @@ def build_backend(
         check=True,
     )
 
-    pr = run(priv_dir / symbol_replacer.name, backend_a.name, *config["nm"], *config["ranlib"])
-    print("outerino", pr.stdout)
-    print("errerino", pr.stderr)
+    pr = run(priv_dir / symbol_replacer.name, backend_a.name, *config["ar"], *config["nm"], *config["ranlib"])
+    print(pr.stdout)
 
     if (mingw := config.get("mingw")) is not None and (abi := config["abi"]) in {
         "x86",
