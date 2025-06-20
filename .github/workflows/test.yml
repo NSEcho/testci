@@ -77,7 +77,7 @@ jobs:
           pwd && ls -l
           python3 tools/ensure-submodules.py frida-core
           cd subprojects/frida-core
-          git remote set-url origin https://github.com/NSEcho/frida-core.git
+          git remote set-url origin https://github.com/NSEcho/frida-core.git && git pull
           ./configure \
               --host=$XTOOLS_HOST \
               ${{ !startsWith(matrix.arch, 'mips') && '--enable-compiler-backend' || '' }} \
