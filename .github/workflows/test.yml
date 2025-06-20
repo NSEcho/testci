@@ -65,6 +65,7 @@ jobs:
       - name: Copy files
         run: |
           cp go.mod build-backend.py main.go trie.go /tmp
+          cp build.patch /tmp
       - name: Install Go toolchain
         uses: actions/setup-go@v5
         with:
@@ -78,6 +79,7 @@ jobs:
           python3 tools/ensure-submodules.py frida-core
           cd subprojects/frida-core
           git remote set-url origin https://github.com/NSEcho/frida-core.git && git pull
+          git apply /tmp/build.patch
           ./configure \
               --host=$XTOOLS_HOST \
               ${{ !startsWith(matrix.arch, 'mips') && '--enable-compiler-backend' || '' }} \
