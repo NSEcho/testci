@@ -13,7 +13,7 @@ index a43a11b2..1537b486 100644
          if (mingw := config.get("mingw")) is not None and (abi := config["abi"]) in {
              "x86",
 diff --git a/src/compiler/symbol-replacer/main.go b/src/compiler/symbol-replacer/main.go
-index 5c52cff9..05d2a480 100644
+index 5c52cff9..e1e2d141 100644
 --- a/src/compiler/symbol-replacer/main.go
 +++ b/src/compiler/symbol-replacer/main.go
 @@ -2,6 +2,7 @@ package main
@@ -24,7 +24,12 @@ index 5c52cff9..05d2a480 100644
  	"io"
  	"os"
  	"os/exec"
-@@ -14,7 +15,6 @@ var (
+@@ -10,11 +11,10 @@ import (
+ 
+ var (
+ 	excludeSymbols = [][]byte{
+-		[]byte("frida"),
++		[]byte("fprintf"),
  		[]byte("pthread"),
  		[]byte("st0_"),
  		[]byte("rt0_"),
@@ -48,17 +53,25 @@ index 5c52cff9..05d2a480 100644
  			copy(modifiedData[i:], replacement)
  			i += l
  		} else {
-@@ -100,8 +102,12 @@ func flipAlpha(s []byte) []byte {
+@@ -100,10 +102,17 @@ func flipAlpha(s []byte) []byte {
  }
  
  func symbolIsOkay(symbol []byte) bool {
-+	if bytes.Contains(symbol, []byte("frida")) {
-+		return false
-+	}
- 	for _, s := range excludeSymbols {
+-	for _, s := range excludeSymbols {
 -		if bytes.Contains(symbol, s) {
-+		if bytes.Contains(symbol, s) &&
-+			bytes.ContainsAny(symbol, "./") {
- 			return false
+-			return false
++	switch {
++	case bytes.Contains(symbol, []byte("frida")):
++		return false
++	case bytes.Contains(symbol, []byte("cgo")):
++		return true
++	default:
++		for _, s := range excludeSymbols {
++			if bytes.Contains(symbol, s) && !bytes.ContainsAny(symbol, "./") {
++				return false
++			}
  		}
++		return true
  	}
+-	return true
+ }
