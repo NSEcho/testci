@@ -1,0 +1,13 @@
+diff --git a/src/compiler/build-backend.py b/src/compiler/build-backend.py
+index 6092b723..888a4bbf 100644
+--- a/src/compiler/build-backend.py
++++ b/src/compiler/build-backend.py
+@@ -35,6 +35,8 @@ def build_backend(
+     go: Path,
+     npm: Path,
+ ):
++    for k, v in config.items():
++        print("key", k, "val", v)
+     base_dir = min(inputs, key=lambda p: len(p.parts)).parent
+     for f in inputs:
+         dest = priv_dir / f.relative_to(base_dir)
