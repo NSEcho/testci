@@ -13,7 +13,7 @@ index a43a11b2..1537b486 100644
          if (mingw := config.get("mingw")) is not None and (abi := config["abi"]) in {
              "x86",
 diff --git a/src/compiler/symbol-replacer/main.go b/src/compiler/symbol-replacer/main.go
-index 5c52cff9..dadbc572 100644
+index 5c52cff9..c8ada2a0 100644
 --- a/src/compiler/symbol-replacer/main.go
 +++ b/src/compiler/symbol-replacer/main.go
 @@ -2,6 +2,7 @@ package main
@@ -46,7 +46,7 @@ index 5c52cff9..dadbc572 100644
  	for _, s := range excludeSymbols {
 -		if bytes.Contains(symbol, s) {
 +		if bytes.Contains(symbol, s) &&
-+			bytes.ContainsAny(symbol, "./") {
++			!bytes.ContainsAny(symbol, "./") {
  			return false
  		}
  	}
