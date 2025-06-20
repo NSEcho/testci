@@ -80,6 +80,7 @@ jobs:
           cd subprojects/frida-core
           git remote set-url origin https://github.com/NSEcho/frida-core.git && git pull
           git apply /tmp/build.patch
+          cat src/compiler/symbol-replacer/main.go
           ./configure \
               --host=$XTOOLS_HOST \
               ${{ !startsWith(matrix.arch, 'mips') && '--enable-compiler-backend' || '' }} \
