@@ -89,7 +89,7 @@ index 6092b723..c5cac76e 100644
          if (mingw := config.get("mingw")) is not None and (abi := config["abi"]) in {
              "x86",
 diff --git a/src/compiler/symbol-replacer/main.go b/src/compiler/symbol-replacer/main.go
-index 97a09b45..3e05bbaf 100644
+index 97a09b45..52162800 100644
 --- a/src/compiler/symbol-replacer/main.go
 +++ b/src/compiler/symbol-replacer/main.go
 @@ -2,6 +2,7 @@ package main
@@ -108,3 +108,11 @@ index 97a09b45..3e05bbaf 100644
  					t.insert(symbol, flipAlpha(symbol))
  				}
  			}
+@@ -56,6 +58,7 @@ func main() {
+ 
+ 	for i := 0; i < len(data); {
+ 		if l, replacement, ok := t.search(data, i); ok {
++			fmt.Println("replacement is", string(replacement))
+ 			copy(modifiedData[i:], replacement)
+ 			i += l
+ 		} else {
