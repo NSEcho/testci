@@ -1,5 +1,5 @@
 diff --git a/src/compiler/build-backend.py b/src/compiler/build-backend.py
-index 6092b723..5632829e 100644
+index 6092b723..c5cac76e 100644
 --- a/src/compiler/build-backend.py
 +++ b/src/compiler/build-backend.py
 @@ -35,6 +35,8 @@ def build_backend(
@@ -11,7 +11,7 @@ index 6092b723..5632829e 100644
      base_dir = min(inputs, key=lambda p: len(p.parts)).parent
      for f in inputs:
          dest = priv_dir / f.relative_to(base_dir)
-@@ -85,40 +87,41 @@ def build_backend(
+@@ -85,40 +87,42 @@ def build_backend(
      )
  
      if mode == "c-archive":
@@ -83,7 +83,8 @@ index 6092b723..5632829e 100644
 +                check=True,
 +            )
 +
-+            run(priv_dir / symbol_replacer.name, backend_a.name, *config["nm"], *config["ranlib"])
++            pr = run(priv_dir / symbol_replacer.name, backend_a.name, *config["nm"], *config["ranlib"])
++            print("out", pr.stdout)
  
          if (mingw := config.get("mingw")) is not None and (abi := config["abi"]) in {
              "x86",

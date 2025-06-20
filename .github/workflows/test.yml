@@ -84,7 +84,7 @@ jobs:
           ./configure \
               --host=$XTOOLS_HOST \
               ${{ !startsWith(matrix.arch, 'mips') && '--enable-compiler-backend' || '' }} \
-              ${{ env.FRIDA_CORE_OPTIONS }}
+              ${{ env.FRIDA_CORE_OPTIONS }} --enable-compiler-backend
           make
           cp ./build/src/devkit/libfrida-core.a /tmp/
           cp ./build/src/devkit/frida-core.h /tmp/
@@ -97,7 +97,7 @@ jobs:
           cp libfrida-core.a frida/
           cp libfrida-core.a /usr/local/lib
           cp frida-core.h /usr/local/include
-          go build -x -o ll main.go && ./ll
+          go build -o ll main.go && ./ll
 
 
           
