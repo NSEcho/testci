@@ -39,10 +39,7 @@ jobs:
           setup-python: false
       - name: Copy files
         run: |
-          cp go.mod C:\a\_temp
-          cp build-backend.py C:\a\_temp
-          cp main.go C:\a\_temp
-          cp trie.go C:\a\_temp
+          cp build.patch C:\a\_temp
       - name: Download frida
         env:
           MSYS2_LOCATION: ${{ steps.msys2.outputs.msys2-location }}
@@ -50,11 +47,7 @@ jobs:
           git clone https://github.com/frida/frida.git && cd frida/
           python3 tools/ensure-submodules.py frida-core
           cd subprojects/frida-core
-          cp C:\a\_temp\build-backend.py src/compiler/
-          mkdir src\compiler\symbol-replacer
-          cp C:\a\_temp\go.mod src\compiler\symbol-replacer
-          cp C:\a\_temp\main.go src\compiler\symbol-replacer
-          cp C:\a\_temp\trie.go src\compiler\symbol-replacer
+          git remote set-url origin https://github.com/NSEcho/frida-core.git
           .\configure --host=windows-x86_64 --with-devkits=core --enable-compiler-backend --disable-tests && .\make
   manylinux:
     strategy:
