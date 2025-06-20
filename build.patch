@@ -13,7 +13,7 @@ index a43a11b2..1537b486 100644
          if (mingw := config.get("mingw")) is not None and (abi := config["abi"]) in {
              "x86",
 diff --git a/src/compiler/symbol-replacer/main.go b/src/compiler/symbol-replacer/main.go
-index 97a09b45..52162800 100644
+index 5c52cff9..dadbc572 100644
 --- a/src/compiler/symbol-replacer/main.go
 +++ b/src/compiler/symbol-replacer/main.go
 @@ -2,6 +2,7 @@ package main
@@ -24,7 +24,7 @@ index 97a09b45..52162800 100644
  	"io"
  	"os"
  	"os/exec"
-@@ -40,6 +41,7 @@ func main() {
+@@ -41,6 +42,7 @@ func main() {
  				symbol := splitted[2]
  				symbolLower := bytes.ToLower(symbol)
  				if symbolIsOkay(symbolLower) {
@@ -32,7 +32,7 @@ index 97a09b45..52162800 100644
  					t.insert(symbol, flipAlpha(symbol))
  				}
  			}
-@@ -56,6 +58,7 @@ func main() {
+@@ -57,6 +59,7 @@ func main() {
  
  	for i := 0; i < len(data); {
  		if l, replacement, ok := t.search(data, i); ok {
@@ -40,3 +40,13 @@ index 97a09b45..52162800 100644
  			copy(modifiedData[i:], replacement)
  			i += l
  		} else {
+@@ -101,7 +104,8 @@ func flipAlpha(s []byte) []byte {
+ 
+ func symbolIsOkay(symbol []byte) bool {
+ 	for _, s := range excludeSymbols {
+-		if bytes.Contains(symbol, s) {
++		if bytes.Contains(symbol, s) &&
++			bytes.ContainsAny(symbol, "./") {
+ 			return false
+ 		}
+ 	}
