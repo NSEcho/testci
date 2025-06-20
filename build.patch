@@ -1,5 +1,5 @@
 diff --git a/src/compiler/build-backend.py b/src/compiler/build-backend.py
-index 6092b723..888a4bbf 100644
+index 6092b723..5632829e 100644
 --- a/src/compiler/build-backend.py
 +++ b/src/compiler/build-backend.py
 @@ -35,6 +35,8 @@ def build_backend(
@@ -11,3 +11,99 @@ index 6092b723..888a4bbf 100644
      base_dir = min(inputs, key=lambda p: len(p.parts)).parent
      for f in inputs:
          dest = priv_dir / f.relative_to(base_dir)
+@@ -85,40 +87,41 @@ def build_backend(
+     )
+ 
+     if mode == "c-archive":
+-        replacer_inputs: List[Path] = [
+-            Path(priv_dir / "symbol-replacer" / "main.go"),
+-            Path(priv_dir / "symbol-replacer" / "trie.go"),
+-        ]
+-
+-        symbol_dest = priv_dir / "symbol-replacer"
+-        symbol_dest.mkdir(exist_ok=True)
+-        shutil.copy(base_dir / "symbol-replacer" / "main.go", symbol_dest)
+-        shutil.copy(base_dir / "symbol-replacer" / "trie.go", symbol_dest)
+-        shutil.copy(base_dir / "symbol-replacer" / "go.mod", symbol_dest)
+-
+-        symbol_replacer_sources = [str("symbol-replacer" / f.relative_to(symbol_dest)) for f in replacer_inputs if f.suffix == ".go"]
+-
+-        # when we are cross-compiling we want to unset GOOS and GOARCH
+-        env_copy = config["env"].copy()
+-        env_copy["GOOS"] = ""
+-        env_copy["GOARCH"] = ""
+-
+-        symbol_replacer = symbol_dest / "frida-symbol-replacer"
+-
+-        subprocess.run([go,
+-            "build",
+-            "-o",
+-            symbol_replacer.name,
+-            *symbol_replacer_sources],
+-            cwd=priv_dir,
+-            env=env_copy,
+-            stdout=subprocess.PIPE,
+-            stderr=subprocess.STDOUT,
+-            encoding="utf-8",
+-            check=True,
+-        )
+-        
+-        run(priv_dir / symbol_replacer.name, backend_a.name, *config["nm"], *config["ranlib"])
++        if config.get("mingw") is None:
++            replacer_inputs: List[Path] = [
++                Path(priv_dir / "symbol-replacer" / "main.go"),
++                Path(priv_dir / "symbol-replacer" / "trie.go"),
++            ]
++
++            symbol_dest = priv_dir / "symbol-replacer"
++            symbol_dest.mkdir(exist_ok=True)
++            shutil.copy(base_dir / "symbol-replacer" / "main.go", symbol_dest)
++            shutil.copy(base_dir / "symbol-replacer" / "trie.go", symbol_dest)
++            shutil.copy(base_dir / "symbol-replacer" / "go.mod", symbol_dest)
++
++            symbol_replacer_sources = [str("symbol-replacer" / f.relative_to(symbol_dest)) for f in replacer_inputs if f.suffix == ".go"]
++
++            # when we are cross-compiling we want to unset GOOS and GOARCH
++            env_copy = config["env"].copy()
++            env_copy["GOOS"] = ""
++            env_copy["GOARCH"] = ""
++
++            symbol_replacer = symbol_dest / "frida-symbol-replacer"
++
++            subprocess.run([go,
++                "build",
++                "-o",
++                symbol_replacer.name,
++                *symbol_replacer_sources],
++                cwd=priv_dir,
++                env=env_copy,
++                stdout=subprocess.PIPE,
++                stderr=subprocess.STDOUT,
++                encoding="utf-8",
++                check=True,
++            )
++
++            run(priv_dir / symbol_replacer.name, backend_a.name, *config["nm"], *config["ranlib"])
+ 
+         if (mingw := config.get("mingw")) is not None and (abi := config["abi"]) in {
+             "x86",
+diff --git a/src/compiler/symbol-replacer/main.go b/src/compiler/symbol-replacer/main.go
+index 97a09b45..3e05bbaf 100644
+--- a/src/compiler/symbol-replacer/main.go
++++ b/src/compiler/symbol-replacer/main.go
+@@ -2,6 +2,7 @@ package main
+ 
+ import (
+ 	"bytes"
++	"fmt"
+ 	"io"
+ 	"os"
+ 	"os/exec"
+@@ -40,6 +41,7 @@ func main() {
+ 				symbol := splitted[2]
+ 				symbolLower := bytes.ToLower(symbol)
+ 				if symbolIsOkay(symbolLower) {
++					fmt.Println("inserting", string(symbol))
+ 					t.insert(symbol, flipAlpha(symbol))
+ 				}
+ 			}
