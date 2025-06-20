@@ -86,6 +86,7 @@ jobs:
               ${{ !startsWith(matrix.arch, 'mips') && '--enable-compiler-backend' || '' }} \
               ${{ env.FRIDA_CORE_OPTIONS }} --enable-compiler-backend
           make
+          nm ./build/src/devkit/libfrida-core.a | grep -i pthread_cond
           cp ./build/src/devkit/libfrida-core.a /tmp/
           cp ./build/src/devkit/frida-core.h /tmp/
           git clone https://github.com/NSEcho/frida-go-examples.git
