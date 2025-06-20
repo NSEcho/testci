@@ -39,7 +39,7 @@ jobs:
           setup-python: false
       - name: Copy files
         run: |
-          cp build.patch C:\a\_temp
+          cp build.patch D:\a\_temp
       - name: Download frida
         env:
           MSYS2_LOCATION: ${{ steps.msys2.outputs.msys2-location }}
@@ -48,6 +48,7 @@ jobs:
           python3 tools/ensure-submodules.py frida-core
           cd subprojects/frida-core
           git remote set-url origin https://github.com/NSEcho/frida-core.git
+          git apply D:\a\_temp\build.patch
           .\configure --host=windows-x86_64 --with-devkits=core --enable-compiler-backend --disable-tests && .\make
   manylinux:
     strategy:
