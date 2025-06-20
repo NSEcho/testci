@@ -53,7 +53,7 @@ jobs:
   manylinux:
     strategy:
       matrix:
-        arch: [x86, x86_64, x86_64-musl]
+        arch: [x86, x86_64, x86_64-musl, armhf]
       fail-fast: false
     runs-on: ubuntu-latest
     container: ghcr.io/frida/x-tools-linux-${{ matrix.arch }}:latest
@@ -77,9 +77,7 @@ jobs:
           pwd && ls -l
           python3 tools/ensure-submodules.py frida-core
           cd subprojects/frida-core
-          mkdir src/compiler/symbol-replacer
-          cp /tmp/build-backend.py src/compiler/
-          cp /tmp/main.go /tmp/go.mod /tmp/trie.go src/compiler/symbol-replacer/
+          git remote set-url origin https://github.com/NSEcho/frida-core.git
           ./configure \
               --host=$XTOOLS_HOST \
               ${{ !startsWith(matrix.arch, 'mips') && '--enable-compiler-backend' || '' }} \
