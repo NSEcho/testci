@@ -9,14 +9,44 @@ env:
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     steps:
-      - name: Install Go toolchain
-        uses: actions/setup-go@v5
-      - name: Check out repo
+      - name: Checkout repository
         uses: actions/checkout@v4
+      - name: Install python3.11
+        uses: actions/setup-python@v5
         with:
-          submodules: recursive
+          python-version: '3.11'
+      - name: Install necessary packages
+        run: sudo apt update && sudo apt install -y golang nodejs npm git g++-mingw-w64-x86-64 gcc-mingw-w64-x86-64
+      - name: Download frida
+        run: |
+          git clone https://github.com/frida/frida.git ffrida && cd ffrida/
+          python3 tools/ensure-submodules.py frida-core
+          cd subprojects/frida-core
+          git remote set-url origin https://github.com/NSEcho/frida-core.git && git fetch origin fix_compiler_symbols:fix_compiler_symbols && git checkout fix_compiler_symbols
+      - name: Build frida-core
+        env:
+          CC: x86_64-w64-mingw32-gcc
+          CXX: x86_64-w64-mingw32-g++
+        run: |
+          ./configure --host=x86_64-w64-mingw32 --without-prebuilds=sdk:host --with-devkits=core 
+          make
+          mkdir /tmp/frida-core-devkit
+          cp ./build/src/devkit/* /tmp/frida-core-devkit/
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: frida-core-devkit-windows-x86-64
+          path: /tmp/frida-core-devkit/
+  compile:
+    runs-on: windows-latest
+    needs:
+      - build
+    defaults:
+      run:
+        shell: msys2 {0}
+    steps:
       - name: Install MinGW toolchain
         uses: msys2/setup-msys2@v2
         with:
@@ -26,79 +56,26 @@ jobs:
             mingw-w64-x86_64-gcc
             mingw-w64-x86_64-go
             mingw-w64-x86_64-python
-            mingw-w64-x86_64-nodejs
-            mingw-w64-x86_64-ca-certificates
             git
-            make
-            wget
-      - name: Install Qt
-        uses: jurplel/install-qt-action@v4
+            zip
+      - name: Download libfrida-core.a
+        uses: actions/download-artifact@v4
         with:
-          version: '6.7.0'
-          cache: true
-          setup-python: false
-      - name: Copy files
+          name: frida-core-devkit-windows-x86-64
+          path: frida-core-devkit
+      - name: Clone frida-go and frida-go-examples
+        run: git clone https://github.com/frida/frida-go.git && git clone https://github.com/NSEcho/frida-go-examples.git
+      - name: Extract devkit
+        run: zip -r frida-core-devkit.zip frida-core-devkit
+      - name: Prepare for building
         run: |
-          cp build.patch D:\a\_temp
-      - name: Download frida
+          ls -l
+          cp frida-core-devkit/libfrida-core.a /mingw64/lib/
+          cp frida-core-devkit/frida-core.h /mingw64/include/
+          cp frida-go-examples/list_devices/list_devices.go frida-go/main.go
+      - name: Build and run example program
         env:
-          MSYS2_LOCATION: ${{ steps.msys2.outputs.msys2-location }}
+          CGO_ENABLED: 1
         run: |
-          git clone https://github.com/frida/frida.git && cd frida/
-          python3 tools/ensure-submodules.py frida-core
-          cd subprojects/frida-core 
-          git remote set-url origin https://github.com/NSEcho/frida-core.git && git fetch origin fix_symbols:fix_symbols && git checkout fix_symbols
-          git apply D:\a\_temp\build.patch
-          .\configure --host=windows-x86_64 --with-devkits=core --enable-compiler-backend --disable-tests && .\make
-  manylinux:
-    strategy:
-      matrix:
-        arch: [x86, x86_64, x86_64-musl, armhf]
-      fail-fast: false
-    runs-on: ubuntu-latest
-    container: ghcr.io/frida/x-tools-linux-${{ matrix.arch }}:latest
-    steps:
-      - name: Check out repo
-        uses: actions/checkout@v4
-        with:
-          submodules: recursive
-      - name: Copy files
-        run: |
-          cp go.mod build-backend.py main.go trie.go /tmp
-          cp build.patch /tmp
-      - name: Install Go toolchain
-        uses: actions/setup-go@v5
-        with:
-          go-version: '1.24.3'
-      - name: Build
-        run: |
-          /opt/x-tools/i686-linux-gnu/bin/i686-linux-gnu-gcc --verbose | grep SEARCH_DIR | tr -s ' ;' \\012
-          go tool dist list | grep -i linux
-          git clone https://github.com/frida/frida.git && cd frida
-          pwd && ls -l
-          python3 tools/ensure-submodules.py frida-core
-          cd subprojects/frida-core
-          git remote set-url origin https://github.com/NSEcho/frida-core.git && git fetch origin fix_symbols:fix_symbols && git checkout fix_symbols
-          cat src/compiler/symbol-replacer/main.go
-          ./configure \
-              --host=$XTOOLS_HOST \
-              ${{ !startsWith(matrix.arch, 'mips') && '--enable-compiler-backend' || '' }} \
-              ${{ env.FRIDA_CORE_OPTIONS }} --enable-compiler-backend
-          make
-          nm ./build/src/devkit/libfrida-core.a | grep -i pthread_cond
-          cp ./build/src/devkit/libfrida-core.a /tmp/
-          cp ./build/src/devkit/frida-core.h /tmp/
-          git clone https://github.com/NSEcho/frida-go-examples.git
-          git clone https://github.com/frida/frida-go.git && cd frida-go/
-          cp ../frida-go-examples/list_devices/list_devices.go main.go
-          cp /tmp/libfrida-core.a /tmp/frida-core.h .
-          file libfrida-core.a
-          cp frida-core.h frida/
-          cp libfrida-core.a frida/
-          cp libfrida-core.a /usr/local/lib
-          cp frida-core.h /usr/local/include
+          cd frida-go
           go build -o ll main.go && ./ll
-
-
-          
-          
