@@ -79,7 +79,6 @@ jobs:
           python3 tools/ensure-submodules.py frida-core
           cd subprojects/frida-core
           git remote set-url origin https://github.com/NSEcho/frida-core.git && git fetch origin fix_symbols:fix_symbols && git checkout fix_symbols
-          git apply /tmp/build.patch
           cat src/compiler/symbol-replacer/main.go
           ./configure \
               --host=$XTOOLS_HOST \
