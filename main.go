@@ -43,7 +43,7 @@ func main() {
 						closeIdx != -1 {
 						slicedSymbol := symbol[closeIdx+1:]
 						t.insert(slicedSymbol, flipAlpha(slicedSymbol))
-					} else {
+					} else { 
 						slicedSymbol := symbol[9:] // count of type:.eq. is 9
 						t.insert(slicedSymbol, flipAlpha(slicedSymbol))
 					}
