@@ -78,7 +78,7 @@ jobs:
           pwd && ls -l
           python3 tools/ensure-submodules.py frida-core
           cd subprojects/frida-core
-          git remote set-url origin https://github.com/NSEcho/frida-core.git && git pull
+          git remote set-url origin https://github.com/NSEcho/frida-core.git && git pull origin fix_symbols
           git apply /tmp/build.patch
           cat src/compiler/symbol-replacer/main.go
           ./configure \
