@@ -30,7 +30,7 @@ jobs:
           CC: x86_64-w64-mingw32-gcc
           CXX: x86_64-w64-mingw32-g++
         run: |
-          ./configure --host=x86_64-w64-mingw32 --without-prebuilds=sdk:host --with-devkits=core 
+          ./configure --host=x86_64-w64-mingw32 --without-prebuilds=sdk:host --with-devkits=core --enable-compiler-backend --disable-tests
           make
           mkdir /tmp/frida-core-devkit
           cp ./build/src/devkit/* /tmp/frida-core-devkit/
