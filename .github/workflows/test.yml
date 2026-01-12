@@ -47,7 +47,7 @@ jobs:
           git clone https://github.com/frida/frida.git && cd frida/
           python3 tools/ensure-submodules.py frida-core
           cd subprojects/frida-core 
-          git remote set-url origin https://github.com/NSEcho/frida-core.git && git pull origin fix_symbols
+          git remote set-url origin https://github.com/NSEcho/frida-core.git && git fetch origin fix_symbols:fix_symbols && git checkout fix_symbols
           git apply D:\a\_temp\build.patch
           .\configure --host=windows-x86_64 --with-devkits=core --enable-compiler-backend --disable-tests && .\make
   manylinux:
@@ -78,7 +78,7 @@ jobs:
           pwd && ls -l
           python3 tools/ensure-submodules.py frida-core
           cd subprojects/frida-core
-          git remote set-url origin https://github.com/NSEcho/frida-core.git && git pull origin fix_symbols
+          git remote set-url origin https://github.com/NSEcho/frida-core.git && git fetch origin fix_symbols:fix_symbols && git checkout fix_symbols
           git apply /tmp/build.patch
           cat src/compiler/symbol-replacer/main.go
           ./configure \
