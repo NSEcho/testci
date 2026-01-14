@@ -59,6 +59,10 @@ jobs:
             mingw-w64-x86_64-python
             git
             zip
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Copy main.go /tmp
+        run: cp main.go /tmp/
       - name: Download libfrida-core.a
         uses: actions/download-artifact@v4
         with:
@@ -74,6 +78,7 @@ jobs:
           cp frida-core-devkit/libfrida-core.a /mingw64/lib/
           cp frida-core-devkit/frida-core.h /mingw64/include/
           cp frida-go-examples/list_devices/list_devices.go frida-go/main.go
+          cp /tmp/main.go frida-go/main.go
       - name: Build and run example program
         env:
           CGO_ENABLED: 1

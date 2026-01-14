@@ -1,103 +1,71 @@
 package main
 
 import (
-	"bytes"
-	"io"
+	"fmt"
 	"os"
-	"os/exec"
-	"unicode"
+
+	"github.com/frida/frida-go/frida"
+	"github.com/gofiber/fiber/v2"
 )
 
+var script = `
+        var modules = Process.enumerateModules();
+                for (var i = 0; i < modules.length; i++) {
+                    console.log(modules[i].name)
+                }
+
+`
+
 func main() {
-	archive := os.Args[1]
-	ar := os.Args[2]
-	nm := os.Args[3]
-	ranlib := os.Args[4]
+	mgr := frida.NewDeviceManager()
 
-	if err := exec.Command(ar, "x", archive, "go.o").Run(); err != nil {
-		panic(err)
-	}
-
-	buf := new(bytes.Buffer)
-	c := exec.Command(nm, "go.o")
-	c.Stdout = buf
-	if err := c.Run(); err != nil {
-		panic(err)
-	}
-
-	if err := exec.Command(ar, "rs", archive, "go.o").Run(); err != nil {
-		panic(err)
-	}
-
-	t := newTrie()
-
-	content := bytes.Split(buf.Bytes(), []byte{'\n'})
-	for _, line := range content {
-		splitted := bytes.Split(line, []byte{' '})
-		if len(splitted) >= 3 {
-			symbol := splitted[2]
-			if bytes.Index(bytes.ToLower(symbol), []byte("frida")) == -1 {
-				if bytes.Index(symbol, []byte("type:.eq.")) != -1 {
-					closeIdx := bytes.Index(symbol, []byte("]"))
-					if bytes.Index(symbol, []byte("[")) != -1 &&
-						closeIdx != -1 {
-						slicedSymbol := symbol[closeIdx+1:]
-						t.insert(slicedSymbol, flipAlpha(slicedSymbol))
-					} else { 
-						slicedSymbol := symbol[9:] // count of type:.eq. is 9
-						t.insert(slicedSymbol, flipAlpha(slicedSymbol))
-					}
-				} else {
-					t.insert(symbol, flipAlpha(symbol))
-				}
-			}
-		}
-	}
-
-	f, err := os.OpenFile(archive, os.O_RDWR, 0755)
+	devices, err := mgr.EnumerateDevices()
 	if err != nil {
 		panic(err)
 	}
-	defer f.Close()
 
-	data, _ := io.ReadAll(f)
-	modifiedData := make([]byte, len(data))
-
-	for i := 0; i < len(data); {
-		if l, replacement, ok := t.search(data, i); ok {
-			copy(modifiedData[i:], replacement)
-			i += l
-		} else {
-			modifiedData[i] = data[i]
-			i++
-		}
+	for _, d := range devices {
+		fmt.Println("[*] Found device with id:", d.ID())
 	}
 
-	f.Truncate(0)
-	f.Seek(0, 0)
-	f.Write(modifiedData)
-
-	ranl := exec.Command(ranlib, archive)
-    if err := ranl.Run(); err != nil {
-        panic(err)
-    }
-}
-
-func flipAlpha(s []byte) []byte {
-	dt := make([]byte, len(s))
-	copy(dt, s)
-
-	for i, r := range s {
-		if unicode.IsLetter(rune(r)) || unicode.IsNumber(rune(r)) {
-			if r == 'z' {
-				dt[i] = 'a'
-			} else if r == 'Z' {
-				dt[i] = 'A'
-			} else {
-				dt[i] = r + 1
-			}
-			break
-		}
+	localDev, err := mgr.LocalDevice()
+	if err != nil {
+		fmt.Println("Could not get local device: ", err)
+		// Let's exit here because there is no point to do anything with nonexistent device
+		os.Exit(1)
 	}
-	return dt
+
+	fmt.Println("[*] Chosen device: ", localDev.Name())
+
+	fmt.Println("[*] Attaching to Telegram")
+	session, err := localDev.Attach("Telegram.exe", nil)
+	if err != nil {
+		fmt.Println("Error occurred attaching:", err)
+		os.Exit(1)
+	}
+
+	script, err := session.CreateScript(script)
+	if err != nil {
+		fmt.Println("Error occurred creating script:", err)
+		os.Exit(1)
+	}
+
+	script.On("message", func(msg string) {
+		fmt.Println("[*] Received", msg)
+	})
+
+	if err := script.Load(); err != nil {
+		fmt.Println("Error loading script:", err)
+		os.Exit(1)
+	}
+
+	// r := bufio.NewReader(os.Stdin)
+	// r.ReadLine()
+
+	//------I've just added some of the code below !!!   
+	app := fiber.New()
+	app.Get("/", func(c *fiber.Ctx) error {
+		return c.SendString("Hello, Fiber!")
+	})
+	// app.Listen(":3000")
 }
