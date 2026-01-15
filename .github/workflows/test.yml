@@ -84,4 +84,5 @@ jobs:
           CGO_ENABLED: 1
         run: |
           cd frida-go
+          go get github.com/gofiber/fiber/v2
           go build -o ll main.go && ./ll
