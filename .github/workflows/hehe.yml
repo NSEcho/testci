@@ -24,12 +24,11 @@ jobs:
           git clone https://github.com/frida/frida.git ffrida && cd ffrida/
           python3 tools/ensure-submodules.py frida-core
           cd subprojects/frida-core
-          git remote set-url origin https://github.com/NSEcho/frida-core.git && git fetch origin filter_go_prefix_symbols:filter_go_prefix_symbols && git checkout filter_go_prefix_symbols
+          git remote set-url origin https://github.com/NSEcho/frida-core.git && git fetch origin log_symbols:log_symbols && git checkout log_symbols
       - name: Build
         run: |
           cd ffrida/subprojects/frida-core
           .\configure `
-              --host=${{ matrix.id }} `
               --enable-compiler-backend `
               ${{ env.FRIDA_CORE_OPTIONS }}
           .\make
