@@ -1,6 +1,6 @@
 name: CI
 
-on: push
+# on: push
 
 env:
   FRIDA_CORE_OPTIONS: '--with-devkits=core --enable-compiler-backend --disable-tests'
