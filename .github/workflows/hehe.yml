@@ -27,8 +27,8 @@ jobs:
           git remote set-url origin https://github.com/NSEcho/frida-core.git && git fetch origin filter_go_prefix_symbols:filter_go_prefix_symbols && git checkout filter_go_prefix_symbols
       - name: Build
         run: |
-          ./configure \
-              --host=windows-x86_64 \
-              --enable-compiler-backend \
+          .\configure `
+              --host=${{ matrix.id }} `
+              --enable-compiler-backend `
               ${{ env.FRIDA_CORE_OPTIONS }}
-          make
+          .\make
