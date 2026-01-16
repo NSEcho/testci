@@ -28,5 +28,5 @@ jobs:
       - name: Build
         run: |
           cd ffrida/subprojects/frida-core
-          .\configure --enable-compiler-backend --with-devkitss core --enable-tests --host windows-x86_64
+          .\configure --enable-compiler-backend --with-devkits core --enable-tests --host windows-x86_64
           .\make
