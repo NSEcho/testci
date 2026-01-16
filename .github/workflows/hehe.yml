@@ -9,14 +9,14 @@ env:
 
 jobs:
   build:
-    runs-on: windows-11-arm
+    runs-on: windows-latest
     steps:
       - name: Install MinGW toolchain for cgo support
         id: msys2
         uses: msys2/setup-msys2@v2
         with:
-          msystem: CLANGARM64
-          install: mingw-w64-clang-aarch64-clang
+          msystem: MINGW64
+          install: mingw-w64-x86_64-gcc
       - name: Install Go toolchain
         uses: actions/setup-go@v5
       - name: Clone frida
@@ -28,7 +28,7 @@ jobs:
       - name: Build
         run: |
           ./configure \
-              --host=windows-arm64 \
+              --host=windows-x86_64 \
               --enable-compiler-backend \
               ${{ env.FRIDA_CORE_OPTIONS }}
           make
