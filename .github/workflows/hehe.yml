@@ -30,5 +30,6 @@ jobs:
           cd ffrida/subprojects/frida-core
           .\configure --enable-compiler-backend --with-devkits core --disable-tests  
           .\make
+          ls build
         env:
           MSYS2_LOCATION: ${{ steps.msys2.outputs.msys2-location }}
