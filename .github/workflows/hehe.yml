@@ -2,11 +2,6 @@ name: CI
 
 on: push
 
-env:
-  FRIDA_CORE_OPTIONS: '--with-devkits=core --enable-tests'
-  CGO_LDFLAGS: -L.
-  CGO_CFLAGS: -I.
-
 jobs:
   build:
     runs-on: windows-latest
