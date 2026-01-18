@@ -28,7 +28,7 @@ jobs:
       - name: Build
         run: |
           cd ffrida/subprojects/frida-core
-          .\configure --enable-compiler-backend --with-devkits core --enable-tests  
+          .\configure --enable-compiler-backend --with-devkits core
           .\make
           mkdir D:\a\testci\testci\builderino
           copy build\src\devkit\frida-core.lib D:\a\testci\testci\builderino 
@@ -39,3 +39,7 @@ jobs:
         with:
           name: hehe.lib
           path: D:\a\testci\testci\builderino\frida-core.lib
+      - name: Test
+        run: |
+          cd ffrida/subprojects/frida-core
+          .\make test
