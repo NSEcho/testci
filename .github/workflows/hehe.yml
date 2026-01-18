@@ -32,7 +32,7 @@ jobs:
       - name: Upload
         uses: actions/upload-artifact@v4
         with:
-          name: hehe.lib
+          name: hehe.lib 
           path: D:\a\testci\testci\builderino\frida-core.lib
       - name: Test
         run: |
