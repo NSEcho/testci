@@ -26,15 +26,15 @@ jobs:
           .\configure --enable-compiler-backend --with-devkits core
           .\make
           mkdir D:\a\testci\testci\builderino
-          copy build\src\devkit\frida-core.lib D:\a\testci\testci\builderino 
+          # copy build\src\devkit\frida-core.lib D:\a\testci\testci\builderino 
         env:
           MSYS2_LOCATION: ${{ steps.msys2.outputs.msys2-location }}
-      - name: Upload
-        uses: actions/upload-artifact@v4
-        with:
-          name: hehe.lib 
-          path: D:\a\testci\testci\builderino\frida-core.lib
-      - name: Test
-        run: |
-          cd ffrida/subprojects/frida-core
-          .\make test
+      #- name: Upload
+       # uses: actions/upload-artifact@v4
+        #with:
+         # name: hehe.lib 
+          #path: D:\a\testci\testci\builderino\frida-core.lib
+      #- name: Test
+       # run: |
+        #  cd ffrida/subprojects/frida-core
+         # .\make test
