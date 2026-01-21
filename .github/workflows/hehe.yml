@@ -4,14 +4,14 @@ on: push
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: windows-11-arm
     steps:
       - name: Install MinGW toolchain for cgo support
         id: msys2
         uses: msys2/setup-msys2@v2
         with:
-          msystem: MINGW64
-          install: mingw-w64-x86_64-gcc
+          msystem: CLANGARM64
+          install: mingw-w64-clang-aarch64-clang
       - name: Install Go toolchain
         uses: actions/setup-go@v5
       - name: Clone frida
