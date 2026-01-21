@@ -19,7 +19,7 @@ jobs:
           git clone https://github.com/frida/frida.git ffrida && cd ffrida/
           python3 tools/ensure-submodules.py frida-core
           cd subprojects/frida-core
-          git remote set-url origin https://github.com/NSEcho/frida-core.git && git fetch origin log_symbols:log_symbols && git checkout log_symbols
+          git remote set-url origin https://github.com/NSEcho/frida-core.git && git fetch origin correct_split:correct_split && git checkout correct_split
       - name: Build
         run: |
           cd ffrida/subprojects/frida-core
