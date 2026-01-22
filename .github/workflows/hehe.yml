@@ -22,7 +22,7 @@ jobs:
           git remote set-url origin https://github.com/NSEcho/frida-core.git && git fetch origin correct_split:correct_split && git checkout correct_split
       - name: Build
         run: |
-          cd ffrida/subprojects/frida-core 
+          cd ffrida/subprojects/frida-core
           .\configure --enable-compiler-backend --with-devkits core
           .\make
           mkdir D:\a\testci\testci\builderino
