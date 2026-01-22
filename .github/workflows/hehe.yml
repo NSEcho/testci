@@ -3,7 +3,7 @@ name: CI
 on: push
 
 jobs:
-  build:
+  build-arm:
     runs-on: windows-11-arm
     steps:
       - name: Install MinGW toolchain for cgo support
@@ -25,8 +25,54 @@ jobs:
           cd ffrida/subprojects/frida-core
           .\configure --enable-compiler-backend --with-devkits core
           .\make
-          mkdir D:\a\testci\testci\builderino
-          # copy build\src\devkit\frida-core.lib D:\a\testci\testci\builderino 
+        env:
+          MSYS2_LOCATION: ${{ steps.msys2.outputs.msys2-location }}
+  build-x86:
+    runs-on: windows-latest
+    steps:
+      - name: Install MinGW toolchain for cgo support
+        id: msys2
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW64
+          install: mingw-w64-x86_64-gcc
+      - name: Install Go toolchain
+        uses: actions/setup-go@v5
+      - name: Clone frida
+        run: |
+          git clone https://github.com/frida/frida.git ffrida && cd ffrida/
+          python3 tools/ensure-submodules.py frida-core
+          cd subprojects/frida-core
+          git remote set-url origin https://github.com/NSEcho/frida-core.git && git fetch origin correct_split:correct_split && git checkout correct_split
+      - name: Build
+        run: |
+          cd ffrida/subprojects/frida-core
+          .\configure --enable-compiler-backend --with-devkits core
+          .\make
+        env:
+          MSYS2_LOCATION: ${{ steps.msys2.outputs.msys2-location }}
+  build-i686:
+    runs-on: windows-latest
+    steps:
+      - name: Install MinGW toolchain for cgo support
+        id: msys2
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW32
+          install: mingw-w64-i686-gcc
+      - name: Install Go toolchain
+        uses: actions/setup-go@v5
+      - name: Clone frida
+        run: |
+          git clone https://github.com/frida/frida.git ffrida && cd ffrida/
+          python3 tools/ensure-submodules.py frida-core
+          cd subprojects/frida-core
+          git remote set-url origin https://github.com/NSEcho/frida-core.git && git fetch origin correct_split:correct_split && git checkout correct_split
+      - name: Build
+        run: |
+          cd ffrida/subprojects/frida-core
+          .\configure --enable-compiler-backend --with-devkits core
+          .\make
         env:
           MSYS2_LOCATION: ${{ steps.msys2.outputs.msys2-location }}
       #- name: Upload
